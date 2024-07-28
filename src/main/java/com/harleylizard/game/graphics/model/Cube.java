@@ -1,8 +1,33 @@
 package com.harleylizard.game.graphics.model;
 
 import com.harleylizard.game.graphics.bakery.Baker;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.floats.FloatArrayList;
 
 public final class Cube {
+    public static final Codec<Cube> CODEC = RecordCodecBuilder.create(builder -> {
+        return builder.group(
+                Codec.FLOAT.listOf().fieldOf("from").forGetter(cube -> new FloatArrayList(new float[] {
+                        cube.fromX * 16.0F,
+                        cube.fromY * 16.0F,
+                        cube.fromZ * 16.0F
+                })),
+                Codec.FLOAT.listOf().fieldOf("to").forGetter(cube -> new FloatArrayList(new float[] {
+                        cube.toX * 16.0F,
+                        cube.toY * 16.0F,
+                        cube.toZ * 16.0F
+                })),
+                Codec.INT.fieldOf("x").forGetter(cube -> cube.x),
+                Codec.INT.fieldOf("y").forGetter(cube -> cube.y)).apply(builder, (from, to, x, y) -> new Cube(
+                        from.get(0) / 16.0F,
+                        from.get(1) / 16.0F,
+                        from.get(1) / 16.0F,
+                        to.get(0) / 16.0F,
+                        to.get(1) / 16.0F,
+                        to.get(1) / 16.0F, x, y));
+    });
+
     private final float fromX;
     private final float fromY;
     private final float fromZ;
