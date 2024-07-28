@@ -1,6 +1,7 @@
 package com.harleylizard.game;
 
 import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.opengl.GL11.*;
 
 public final class Main {
 
@@ -12,7 +13,10 @@ public final class Main {
         }
 
         try (var window = new Window()) {
+
+            glClearColor(1.0F, 0.0F, 0.0F, 0.0F);
             while (!window.shouldClose()) {
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
                 window.poll();
             }

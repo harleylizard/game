@@ -1,5 +1,6 @@
 package com.harleylizard.game;
 
+import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -10,6 +11,11 @@ public final class Window implements AutoCloseable {
     private final long window;
 
     {
+        glfwDefaultWindowHints();
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+        glfwWindowHint(GLFW_CONTEXT_RELEASE_BEHAVIOR, GLFW_RELEASE_BEHAVIOR_FLUSH);
+
         if ((window = glfwCreateWindow(854, 480, "Game", NULL, NULL)) == NULL) {
             glfwTerminate();
             throw new RuntimeException("Failed to create GLFW Window");
@@ -29,6 +35,9 @@ public final class Window implements AutoCloseable {
                 glfwSetWindowPos(window, (buffer.get(2) - width) / 2, (buffer.get(3) - height) / 2);
             }
         }
+
+        glfwMakeContextCurrent(window);
+        GL.createCapabilities();
     }
 
     public boolean shouldClose() {
