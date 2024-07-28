@@ -4,11 +4,16 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.system.MemoryUtil.memAddress;
 
+@SuppressWarnings("resource")
 public final class Window implements AutoCloseable {
     private final long window;
+
+    private int width;
+    private int height;
 
     {
         glfwDefaultWindowHints();
@@ -29,12 +34,17 @@ public final class Window implements AutoCloseable {
                 nglfwGetMonitorWorkarea(monitor, memAddress(buffer), memAddress(buffer) + 4, memAddress(buffer) + 8, memAddress(buffer) + 12);
                 nglfwGetWindowSize(window, memAddress(buffer) + 16, memAddress(buffer) + 20);
 
-                var width = buffer.get(4);
-                var height = buffer.get(5);
+                width = buffer.get(4);
+                height = buffer.get(5);
 
                 glfwSetWindowPos(window, (buffer.get(2) - width) / 2, (buffer.get(3) - height) / 2);
             }
         }
+        glfwSetWindowSizeCallback(window, (window, width, height) -> {
+            this.width = width;
+            this.height = height;
+            glViewport(0, 0, width, height);
+        });
 
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
@@ -47,6 +57,10 @@ public final class Window implements AutoCloseable {
     public void poll() {
         glfwSwapBuffers(window);
         glfwPollEvents();
+    }
+
+    public float getAspectRatio() {
+        return (float) width / (float) height;
     }
 
     @Override
